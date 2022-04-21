@@ -27,4 +27,29 @@ public class UserDao {
         //결과리턴
         return user;
     }
+
+    public void insert(User user) throws SQLException, ClassNotFoundException {
+        //mysql
+        //driver 로딩
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        //connection
+        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/userdao2?serverTimezone=UTC", "1234", "1234");
+        //query
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into userdao2 (name, password) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
+        preparedStatement.setString(1, user.getName());
+        preparedStatement.setString(2, user.getPassword());
+        preparedStatement.executeUpdate();
+        //실행
+        ResultSet resultSet = preparedStatement.getGeneratedKeys();
+        resultSet.next();
+        //결과매핑
+        //User user = new User();
+        user.setId(resultSet.getInt(1));
+        //자원해지
+        resultSet.close();
+        preparedStatement.close();
+        connection.close();
+        //결과리턴
+        //return user;
+    }
 }
