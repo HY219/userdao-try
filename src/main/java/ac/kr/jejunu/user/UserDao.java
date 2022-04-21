@@ -14,7 +14,7 @@ public class UserDao {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
-        User user;
+        User user = null;
         try {
             //mysql
             //driver 로딩
@@ -24,12 +24,13 @@ public class UserDao {
             preparedStatement.setInt(1, id);
             //실행
             resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            //결과매핑
-            user = new User();
-            user.setId(resultSet.getInt("id"));
-            user.setName(resultSet.getString("name"));
-            user.setPassword(resultSet.getString("password"));
+            if(resultSet.next()) {
+                //결과매핑
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setName(resultSet.getString("name"));
+                user.setPassword(resultSet.getString("password"));
+            }
         } finally {
             //자원해지
             try {
@@ -72,12 +73,90 @@ public class UserDao {
             user.setId(resultSet.getInt(1));
         } finally {
             //자원해지
-            resultSet.close();
-            preparedStatement.close();
-            connection.close();
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         //결과리턴
         //return user;
+    }
+
+    public void update(User user) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        //ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
+            //query
+            preparedStatement = connection.prepareStatement("update userdao2 set name = ?, password = ? where id = ?");
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setInt(3, user.getId());
+            preparedStatement.executeUpdate();
+            //실행
+            //resultSet = preparedStatement.getGeneratedKeys();
+            //resultSet.next();
+            //결과매핑
+            //User user = new User();
+            //user.setId(resultSet.getInt(1));
+        } finally {
+            //자원해지
+            //resultSet.close();
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void delete(Integer id) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        //ResultSet resultSet = null;
+        try {
+            connection = dataSource.getConnection();
+            //query
+            preparedStatement = connection.prepareStatement("delete from userdao2 where id = ?");
+            preparedStatement.setInt(1, id);
+            preparedStatement.executeUpdate();
+            //실행
+            //resultSet = preparedStatement.getGeneratedKeys();
+            //resultSet.next();
+            //결과매핑
+            //User user = new User();
+            //user.setId(resultSet.getInt(1));
+        } finally {
+            //자원해지
+            //resultSet.close();
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

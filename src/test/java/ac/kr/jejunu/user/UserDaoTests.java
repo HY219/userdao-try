@@ -1,5 +1,6 @@
 package ac.kr.jejunu.user;
 
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
@@ -56,5 +57,37 @@ public class UserDaoTests {
         assertThat(insertedUser.getPassword(), is(password));
     }
 
+    @Test
+    public void update() throws SQLException {
+        //test data 등록
+        User user = new User();
+        user.setName(name);
+        user.setPassword(password);
+        userDao.insert(user);
+
+        String updatedName = "허윤호";
+        user.setName(updatedName);
+        String updatedPassword = "1111";
+        user.setPassword(updatedPassword);
+
+        userDao.update(user);
+
+        User updatedUser = userDao.get(user.getId());
+        assertThat(updatedUser.getName(), is(updatedName));
+        assertThat(updatedUser.getPassword(), is(updatedPassword));
+    }
+
+    @Test
+    public void delete() throws SQLException {
+        User user = new User();
+        user.setName(name);
+        user.setPassword(password);
+        userDao.insert(user);
+
+        userDao.delete(user.getId());
+
+        User deletedUser = userDao.get(user.getId());
+        assertThat(deletedUser, IsNull.nullValue()); //id가 null이면 됨. -> 삭제 확인.
+    }
 
 }
