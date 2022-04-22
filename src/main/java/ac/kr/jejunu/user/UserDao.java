@@ -20,8 +20,10 @@ public class UserDao {
             //driver 로딩
             connection = dataSource.getConnection();
             //query
-            preparedStatement = connection.prepareStatement("select id, name, password from userdao2 where id = ?");
-            preparedStatement.setInt(1, id);
+            StatementStrategy statementStrategy = new GetStatementStrategy();
+            preparedStatement = statementStrategy.makeStatement(id, connection);
+//            preparedStatement = connection.prepareStatement("select id, name, password from userdao2 where id = ?");
+//            preparedStatement.setInt(1, id);
             //실행
             resultSet = preparedStatement.executeQuery();
             if(resultSet.next()) {
@@ -61,9 +63,11 @@ public class UserDao {
         try {
             connection = dataSource.getConnection();
             //query
-            preparedStatement = connection.prepareStatement("insert into userdao2 (name, password) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getPassword());
+            StatementStrategy statementStrategy = new InsertStatementStrategy();
+            preparedStatement = statementStrategy.makeStatement(user, connection);
+//            preparedStatement = connection.prepareStatement("insert into userdao2 (name, password) values (?, ?)", Statement.RETURN_GENERATED_KEYS);
+//            preparedStatement.setString(1, user.getName());
+//            preparedStatement.setString(2, user.getPassword());
             preparedStatement.executeUpdate();
             //실행
             resultSet = preparedStatement.getGeneratedKeys();
@@ -101,10 +105,12 @@ public class UserDao {
         try {
             connection = dataSource.getConnection();
             //query
-            preparedStatement = connection.prepareStatement("update userdao2 set name = ?, password = ? where id = ?");
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setInt(3, user.getId());
+            StatementStrategy statementStrategy = new UpdateStatementStrategy();
+            preparedStatement = statementStrategy.makeStatement(user, connection);
+//            preparedStatement = connection.prepareStatement("update userdao2 set name = ?, password = ? where id = ?");
+//            preparedStatement.setString(1, user.getName());
+//            preparedStatement.setString(2, user.getPassword());
+//            preparedStatement.setInt(3, user.getId());
             preparedStatement.executeUpdate();
             //실행
             //resultSet = preparedStatement.getGeneratedKeys();
@@ -135,8 +141,8 @@ public class UserDao {
         try {
             connection = dataSource.getConnection();
             //query
-            preparedStatement = connection.prepareStatement("delete from userdao2 where id = ?");
-            preparedStatement.setInt(1, id);
+            StatementStrategy statementStrategy = new DeleteStatementStrategy();
+            preparedStatement = statementStrategy.makeStatement(id, connection);
             preparedStatement.executeUpdate();
             //실행
             //resultSet = preparedStatement.getGeneratedKeys();
@@ -159,4 +165,11 @@ public class UserDao {
             }
         }
     }
+
+//    private PreparedStatement makeStatement(Integer id, Connection connection) throws SQLException{
+////        PreparedStatement preparedStatement;
+////        preparedStatement = connection.prepareStatement("delete from userdao2 where id = ?");
+////        preparedStatement.setInt(1, id);
+////        return preparedStatement;
+//    }
 }
